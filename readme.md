@@ -46,8 +46,7 @@ This script assumes that your master will autosign new agents. You can enable th
 
 ### Debian Packages
 
-It also assumes that your master has the proper debian packages in the PE Master class. The easiest way to do this is to run this simple script below on your master:
-
+It also assumes that your master has the proper debian packages in the PE Master class. The easiest way to do this is to run this simple ruby script below on your master:
 
 ```ruby
 pe_hostname = `facter fqdn`.strip
