@@ -39,14 +39,32 @@ def get_os_hash_from_args(argv)
 end
 
 def format_os_response(body)
-  centos_vms = body['centos-7-x86_64']
-  debian_vms = body['debian-7-x86_64']
+  host_list = Array.new
 
-  puts  'Centos vms:'
-  puts centos_vms
+  centos_hosts = body['centos-7-x86_64']
+  debian_hosts = body['debian-7-x86_64']
 
-  puts  'Debian vms:'
-  puts debian_vms
+  centos_hosts.each do |key,host_arr|
+    if host_arr.kind_of?(Array)
+      host_arr.each do |host|
+        host_list.push host
+      end
+    else
+      host_list.push host_arr
+    end
+  end
+
+  debian_hosts.each do |key,host_arr|
+    if host_arr.kind_of?(Array)
+      host_arr.each do |host|
+        host_list.push host
+      end
+    else
+      host_list.push host_arr
+    end
+  end
+
+  host_list
 end
 
 def grab_vms(os_hash, token, url, verbose)
@@ -91,12 +109,43 @@ def get_token_from_file
 end
 
 def provision_hosts(pe_master, host_list)
+  STDOUT.flush
+  puts "Enter 'root' password for all vms (by default all pooler vms share the same password):"
+  password = STDIN.noecho(&:gets).chomp
+  user = 'root'
+  # run this command on hosts to register them with puppet master
+  add_node_cmd = "curl -k https://#{pe_master}:8140/packages/current/install.bash | bash"
+  # run puppet
+  run_puppet = "/opt/puppetlabs/puppet/bin/puppet agent -t"
+
+
+  host_list.each do |host|
+    begin
+      ssh = Net::SSH.start(host, user, :password => password)
+      puts "Setting up agent packages on host #{host}"
+      setup_res = ssh.exec!(add_node_cmd)
+      puts setup_res
+      puts "Running puppet on host #{host}"
+      agent_run_res = ssh.exec!(run_puppet)
+      puts agent_run_res
+      ssh.close
+    rescue
+      STDERR.puts "Unable to connect to #{host} using #{user}"
+      exit 1
+    end
+  end
 end
 
 if __FILE__ == $0
   token = get_token_from_file
   url = 'https://vcloud.delivery.puppetlabs.net'
   verbose = ENV['VERBOSE'] || false
+  pe_master = ENV['PEMASTER']
+
+  if pe_master.nil?
+    STDERR.puts "You did not set the PEMASTER env var"
+    STDERR.puts "Example: PEMASTER=mymasterhost.net ruby agent-provision.rb centos-7-x86_64=1 debian-7-x86_64=1"
+  end
 
   if ARGV[0] == 'delete'
     delete_vms(ARGV[1], token, url, verbose)
@@ -107,7 +156,7 @@ if __FILE__ == $0
 
   if os_hash.empty?
     STDERR.puts "You did not supply any arguments"
-    STDERR.puts "Example: ruby agent-provision.rb centos-7-x86_64=1 debian-7-x86_64=1"
+    STDERR.puts "Example: PEMASTER=mymasterhost.net ruby agent-provision.rb centos-7-x86_64=1 debian-7-x86_64=1"
     exit 1
   end
 
@@ -116,6 +165,8 @@ if __FILE__ == $0
   end
 
   hostname_hash = grab_vms(os_hash, token, url, verbose)
-  format_os_response(hostname_hash)
+  host_list = format_os_response(hostname_hash)
+  puts host_list
+  provision_hosts(pe_master, host_list)
   exit 0
 end
