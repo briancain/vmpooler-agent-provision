@@ -2,6 +2,8 @@
 
 This script uses [vmfloaty](https://github.com/briancain/vmfloaty) to grab agents from [vmpooler](https://github.com/puppetlabs/vmpooler) and provision them to be used with Puppet Enterprise.
 
+_NOTE:_ This was written for a demo, so it may break in the future
+
 ## Grabbing and provisioning vms example:
 
 Non-verbose:
