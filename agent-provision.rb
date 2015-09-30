@@ -142,14 +142,15 @@ if __FILE__ == $0
   verbose = ENV['VERBOSE'] || false
   pe_master = ENV['PEMASTER']
 
-  if pe_master.nil?
-    STDERR.puts "You did not set the PEMASTER env var"
-    STDERR.puts "Example: PEMASTER=mymasterhost.net ruby agent-provision.rb centos-7-x86_64=1 debian-7-x86_64=1"
-  end
 
   if ARGV[0] == 'delete'
     delete_vms(ARGV[1], token, url, verbose)
     exit 0
+  end
+
+  if pe_master.nil?
+    STDERR.puts "You did not set the PEMASTER env var"
+    STDERR.puts "Example: PEMASTER=mymasterhost.net ruby agent-provision.rb centos-7-x86_64=1 debian-7-x86_64=1"
   end
 
   os_hash = get_os_hash_from_args(ARGV)
