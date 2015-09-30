@@ -30,7 +30,7 @@ This script accepts a simple config file for using an existing vmpooler token. I
 token: 'exampletokenstring'
 ```
 
-If no config file exists, it will ask for your username and password and create a token for you.
+If no config file exists, it will ask for your username and password and create a token for you and save it in the current directory as `pooler.yml`.
 
 ## Assumptions
 
@@ -68,3 +68,15 @@ puppetclassify.groups.update_group(group_delta)
 ```
 
 Then rerun `puppet agent -t` on your master
+
+### Other assumptions
+
+Since this is a script for a demo, it assumes that you only will request centos-7 and debian-7 vms.
+
+## Deleting your token
+
+If you would like to remove your token from use, simply use the floaty cli to remove the token:
+
+```
+floaty token delete --token mytokenstring --url https://vcloud.delivery.puppetlabs.net --user username
+```
