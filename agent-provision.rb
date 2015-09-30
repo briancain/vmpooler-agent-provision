@@ -72,6 +72,10 @@ def grab_vms(os_hash, token, url, verbose)
   response_body
 end
 
+def delete_vms(hostnames, token, url, verbose)
+  Pooler.delete(verbose, url, hostnames, token)
+end
+
 def get_token_from_file
   conf = {}
   token = ''
@@ -93,6 +97,11 @@ if __FILE__ == $0
   token = get_token_from_file
   url = 'https://vcloud.delivery.puppetlabs.net'
   verbose = ENV['VERBOSE'] || false
+
+  if ARGV[0] == 'delete'
+    delete_vms(ARGV[1], token, url, verbose)
+    exit 0
+  end
 
   os_hash = get_os_hash_from_args(ARGV)
 

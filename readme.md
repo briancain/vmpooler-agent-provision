@@ -2,7 +2,7 @@
 
 This script uses [vmfloaty](https://github.com/briancain/vmfloaty) to grab agents from [vmpooler](https://github.com/puppetlabs/vmpooler) and provision them to be used with Puppet Enterprise.
 
-## Example:
+## Grabbing and provisioning vms example:
 
 Non-verbose:
 
@@ -14,6 +14,12 @@ Verbose:
 
 ```
 VERBOSE=true ruby agent-provision.rb centos-7-x86_64=1 debian-7-x86_64=1
+```
+
+## Deleting vms
+
+```
+ruby agent-provision.rb delete qtznen7fe1hclk1,uw320rq6tgu6j89
 ```
 
 ## config file
