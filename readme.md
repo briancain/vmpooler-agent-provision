@@ -31,3 +31,37 @@ token: 'exampletokenstring'
 ```
 
 If no config file exists, it will ask for your username and password and create a token for you.
+
+## Assumptions
+
+This script makes a couple assumptions about your puppet master
+
+### Auto signing
+
+This script assumes that your master will autosign new agents
+
+### Debian Packages
+
+It also assumes that your master has the proper debian packages in the PE Master class. The easiest way to do this is to run this simple script below on your master:
+
+
+```ruby
+pe_hostname = `facter fqdn`.strip
+require 'puppetclassify'
+
+# URL of classifier as well as certificates and private key for auth
+auth_info = {
+  "ca_certificate_path" => "/etc/puppetlabs/puppet/ssl/certs/ca.pem",
+  "certificate_path"    => "/etc/puppetlabs/puppet/ssl/certs/#{pe_hostname}.pem",
+  "private_key_path"    => "/etc/puppetlabs/puppet/ssl/private_keys/#{pe_hostname}.pem"
+}
+
+classifier_url = "https://#{pe_hostname}:4433/classifier-api"
+puppetclassify = PuppetClassify.new(classifier_url, auth_info)
+
+master_id = puppetclassify.groups.get_group_id("PE Master")
+group_delta = {"name"=>"PE Master", "id"=>master_id, "environment"=>"production", "classes"=>{"pe_repo::platform::debian_7_amd64"=>{}}}
+puppetclassify.groups.update_group(group_delta)
+```
+
+Then rerun `puppet agent -t` on your master
