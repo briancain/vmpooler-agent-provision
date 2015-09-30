@@ -38,7 +38,11 @@ This script makes a couple assumptions about your puppet master
 
 ### Auto signing
 
-This script assumes that your master will autosign new agents
+This script assumes that your master will autosign new agents. You can enable this by running the command below on your PE Master.
+
+```
+/opt/puppetlabs/bin/puppet config set autosign true --section master
+```
 
 ### Debian Packages
 
