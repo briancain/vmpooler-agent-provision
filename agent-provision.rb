@@ -171,7 +171,10 @@ if __FILE__ == $0
 
   hostname_hash = grab_vms(os_hash, token, url, verbose)
   host_list = format_os_response(hostname_hash)
+
+  puts "Your hosts:"
   puts host_list
+
   provision_hosts(pe_master, host_list)
   exit 0
 end
