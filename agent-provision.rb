@@ -44,23 +44,27 @@ def format_os_response(body)
   centos_hosts = body['centos-7-x86_64']
   debian_hosts = body['debian-7-x86_64']
 
-  centos_hosts.each do |key,host_arr|
-    if host_arr.kind_of?(Array)
-      host_arr.each do |host|
-        host_list.push host
+  unless centos_hosts.nil?
+    centos_hosts.each do |key,host_arr|
+      if host_arr.kind_of?(Array)
+        host_arr.each do |host|
+          host_list.push host
+        end
+      else
+        host_list.push host_arr
       end
-    else
-      host_list.push host_arr
     end
   end
 
-  debian_hosts.each do |key,host_arr|
-    if host_arr.kind_of?(Array)
-      host_arr.each do |host|
-        host_list.push host
+  unless debian_hosts.nil?
+    debian_hosts.each do |key,host_arr|
+      if host_arr.kind_of?(Array)
+        host_arr.each do |host|
+          host_list.push host
+        end
+      else
+        host_list.push host_arr
       end
-    else
-      host_list.push host_arr
     end
   end
 
