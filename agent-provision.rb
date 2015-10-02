@@ -56,7 +56,6 @@ def format_os_response(body)
   linux_host_list = Array.new
   windows_host_list = Array.new
   host_list = {}
-  puts body
 
   centos_hosts = body['centos-7-x86_64']['hostname'] unless body['centos-7-x86_64'].nil?
   debian_hosts = body['debian-7-x86_64']['hostname'] unless body['debian-7-x86_64'].nil?
