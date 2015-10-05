@@ -145,7 +145,8 @@ def provision_hosts(pe_master, host_list)
   # aliases
   export_puppet_path = "echo 'export PATH=/cygdrive/c/Program\\ Files/Puppet\\ Labs/Puppet/bin:$PATH' >> .bashrc"
   windows_puppet  = "\"cmd /c puppet\""
-  puppet_alias = "echo 'alias puppet=#{windows_puppet}' >> .bashrc"
+  create_puppet_bin = "echo #{windows_puppet} >> /bin/puppet"
+  make_puppet_bin_exec = "chmod a+x /bin/puppet"
 
   linux_hosts.each do |host|
     begin
@@ -181,8 +182,10 @@ def provision_hosts(pe_master, host_list)
       puts "Setting up aliases..."
       export_run = ssh.exec!(export_puppet_path)
       puts export_run
-      puppet_alias_run = ssh.exec!(puppet_alias)
-      puts puppet_alias_run
+      puppet_bin_cmd = ssh.exec!(create_puppet_bin)
+      puts puppet_bin_cmd
+      make_bin_exec_cmd = ssh.exec!(make_puppet_bin_exec)
+      puts make_bin_exec_cmd
       ssh.close
     rescue
       STDERR.puts "Unable to connect to #{host} using #{user}"
