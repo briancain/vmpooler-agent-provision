@@ -142,6 +142,10 @@ def provision_hosts(pe_master, host_list)
   get_puppet_agent = "curl -O http://agent-downloads.delivery.puppetlabs.net/2015.3/puppet-agent-latest/repos/windows/puppet-agent-1.2.5.139.g5822f8d-x64.msi"
   add_win_node_cmd = "cmd.exe /c \"start /w msiexec /qn /L*V install.txt /i puppet-agent-1.2.5.139.g5822f8d-x64.msi PUPPET_MASTER_SERVER=#{pe_master} PUPPET_AGENT_STARTUP_MODE=Manual\""
   run_puppet_win = "cd /cygdrive/c/Program\\ Files/Puppet\\ Labs/Puppet/bin/ && cmd /c puppet.bat agent -t"
+  # aliases
+  export_puppet_path = "echo 'export PATH=/cygdrive/c/Program\\ Files/Puppet\\ Labs/Puppet/bin:$PATH' >> .bashrc"
+  windows_puppet  = "\"cmd /c puppet\""
+  puppet_alias = "echo 'alias puppet=#{windows_puppet}' >> .bashrc"
 
   linux_hosts.each do |host|
     begin
@@ -165,12 +169,20 @@ def provision_hosts(pe_master, host_list)
       puts 'Getting puppet-agent package'
       get_package = ssh.exec!(get_puppet_agent)
       puts get_package
+
       puts "Setting up agent packages on host #{host}"
       setup_res = ssh.exec!(add_win_node_cmd)
       puts setup_res
+
       puts "Running puppet on host #{host}"
       agent_run_res = ssh.exec!(run_puppet_win)
       puts agent_run_res
+
+      puts "Setting up aliases..."
+      export_run = ssh.exec!(export_puppet_path)
+      puts export_run
+      puppet_alias_run = ssh.exec!(puppet_alias)
+      puts puppet_alias_run
       ssh.close
     rescue
       STDERR.puts "Unable to connect to #{host} using #{user}"
