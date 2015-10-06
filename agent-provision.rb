@@ -144,7 +144,8 @@ def provision_hosts(pe_master, host_list)
   run_puppet_win = "cd /cygdrive/c/Program\\ Files/Puppet\\ Labs/Puppet/bin/ && cmd /c puppet.bat agent -t"
   # aliases
   export_puppet_path = "echo 'export PATH=/cygdrive/c/Program\\ Files/Puppet\\ Labs/Puppet/bin:$PATH' >> .bashrc"
-  windows_puppet  = "\"cmd /c puppet\""
+  args = "$@" #respect arguments passed to puppet
+  windows_puppet  = "\"cmd /c puppet \"\\$@\"\""
   create_puppet_bin = "echo #{windows_puppet} >> /bin/puppet"
   make_puppet_bin_exec = "chmod a+x /bin/puppet"
 
@@ -183,6 +184,7 @@ def provision_hosts(pe_master, host_list)
       export_run = ssh.exec!(export_puppet_path)
       puts export_run
       puppet_bin_cmd = ssh.exec!(create_puppet_bin)
+      puts "create puppet bin: #{create_puppet_bin}"
       puts puppet_bin_cmd
       make_bin_exec_cmd = ssh.exec!(make_puppet_bin_exec)
       puts make_bin_exec_cmd
