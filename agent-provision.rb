@@ -61,6 +61,24 @@ def format_os_response(body)
   debian_hosts = body['debian-7-x86_64']['hostname'] unless body['debian-7-x86_64'].nil?
   windows_hosts = body['win-2012r2-x86_64']['hostname'] unless body['win-2012r2-x86_64'].nil?
 
+  if centos_hosts
+    puts "Centos hosts:"
+    puts centos_hosts
+    puts
+  end
+
+  if debian_hosts
+    puts "Debian hosts:"
+    puts debian_hosts
+    puts
+  end
+
+  if windows_hosts
+    puts "Windows hosts:"
+    puts windows_hosts
+    puts
+  end
+
   unless centos_hosts.nil?
     centos_list = build_list(centos_hosts)
     centos_list.each do |host|
@@ -227,9 +245,6 @@ if __FILE__ == $0
 
   hostname_hash = grab_vms(os_hash, token, url, verbose)
   host_list = format_os_response(hostname_hash)
-
-  puts "Your hosts:"
-  puts host_list
 
   provision_hosts(pe_master, host_list)
   exit 0
