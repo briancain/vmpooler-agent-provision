@@ -101,19 +101,7 @@ def format_os_response(body)
 end
 
 def grab_vms(os_hash, token, url, verbose)
-  os_string = ""
-
-  ## Because the Pooler.retrieve command
-  #  expects this to be directly from the command line
-  #  delimited by commas
-  os_hash.each do |os,num|
-    num.times do |i|
-      os_string << os+","
-    end
-  end
-
-  os_string = os_string.chomp(",")
-  response_body = Pooler.retrieve(verbose, os_string, token, url)
+  response_body = Pooler.retrieve(verbose, os_hash, token, url)
 
   if response_body['ok'] == false
     STDERR.puts "There was a problem with your request"
